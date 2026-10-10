@@ -102,6 +102,26 @@ npm run test -w @pantrymind/web
 
 El comando ejecuta una vez los tests de componentes y termina.
 
+## Comandos de calidad
+
+Desde la raíz del repositorio, para todos los workspaces a la vez:
+
+```text
+npm run lint
+npm run format:check
+npm run typecheck
+npm run test
+npm run build
+```
+
+- `lint` busca patrones incorrectos en el código con oxlint.
+- `format:check` comprueba el formato con Prettier sin modificar nada;
+  `npm run format` lo corrige.
+- `typecheck` comprueba los tipos de TypeScript sin generar archivos.
+- `test` ejecuta los tests unitarios de la API y los de componentes de la web.
+  Los tests de extremo a extremo de la API siguen en su propio comando.
+- `build` compila los dos workspaces.
+
 ## Estructura de carpetas
 
 ```text
@@ -112,15 +132,19 @@ El comando ejecuta una vez los tests de componentes y termina.
 ├── docs/
 │   ├── adr/        Registros de decisiones de arquitectura
 │   └── roadmap.md  Hoja de ruta
-├── .editorconfig   Estilo de edición común a todos los editores
-├── .env.example    Plantilla de variables de entorno
-├── .gitattributes  Normalización de finales de línea
-├── .gitignore      Archivos que no se versionan
-├── .nvmrc          Versión de Node.js del proyecto
-└── package.json    Raíz del monorepo (npm workspaces)
+├── .editorconfig     Estilo de edición común a todos los editores
+├── .env.example      Plantilla de variables de entorno
+├── .gitattributes    Normalización de finales de línea
+├── .gitignore        Archivos que no se versionan
+├── .nvmrc            Versión de Node.js del proyecto
+├── .prettierignore   Archivos que Prettier no formatea
+├── .prettierrc.json  Configuración de formato de todo el repositorio
+├── CONTRIBUTING.md   Guía de contribución
+└── package.json      Raíz del monorepo (npm workspaces) y scripts comunes
 ```
 
 ## Documentación
 
+- [Guía de contribución](CONTRIBUTING.md)
 - [Hoja de ruta](docs/roadmap.md)
 - [ADR 0001: Monorepo con npm workspaces](docs/adr/0001-monorepo-npm-workspaces.md)
