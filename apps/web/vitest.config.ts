@@ -1,5 +1,5 @@
-import { defineConfig, mergeConfig } from 'vitest/config'
-import viteConfig from './vite.config.ts'
+import { defineConfig, mergeConfig } from 'vitest/config';
+import viteConfig from './vite.config.ts';
 
 export default mergeConfig(
   viteConfig,
@@ -9,4 +9,4 @@ export default mergeConfig(
       setupFiles: ['./src/setup-tests.ts'],
     },
   }),
-)
+);
