@@ -1,6 +1,6 @@
 # Hoja de ruta de PantryMind
 
-Estado: **en desarrollo**. Las Issues 0 y 1 están cerradas; el resto, pendientes.
+Estado: **en desarrollo**. Las Issues 0, 1 y 2 están cerradas; el resto, pendientes.
 Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada Issue.
 
 ## Cómo leer este documento
@@ -40,6 +40,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 - **Demuestra:** estructura básica de NestJS (módulo, controlador, test).
 
 ### 2. Scaffold de la web con React y Vite
+- **Estado:** cerrada.
 - **Depende de:** 0.
 - **Entregable:** aplicación React + TypeScript en `apps/web` con una página inicial y un test de componente.
 - **Verificación:** el servidor de desarrollo arranca; `build` termina sin errores; el test pasa.
