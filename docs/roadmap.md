@@ -1,6 +1,6 @@
 # Hoja de ruta de PantryMind
 
-Estado: **en desarrollo**. La Issue 0 está cerrada; el resto, pendientes.
+Estado: **en desarrollo**. Las Issues 0 y 1 están cerradas; el resto, pendientes.
 Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada Issue.
 
 ## Cómo leer este documento
@@ -33,6 +33,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 - **Demuestra:** preparación de un repositorio colaborativo y multiplataforma.
 
 ### 1. Scaffold de la API con NestJS
+- **Estado:** cerrada.
 - **Depende de:** 0.
 - **Entregable:** aplicación NestJS en `apps/api` con `GET /health` y un test.
 - **Verificación:** la API arranca en local; el endpoint responde 200; el test pasa.
@@ -46,7 +47,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 3. Linting, formato y comprobación de tipos
 - **Depende de:** 1, 2.
-- **Entregable:** ESLint y Prettier configurados; scripts raíz `lint`, `format`, `typecheck`, `test`.
+- **Entregable:** oxlint y Prettier configurados de forma coherente en los dos workspaces; scripts raíz `lint`, `format`, `typecheck`, `test`; limpieza pendiente del scaffold de la API: decidir si se conserva `@nestjs/mau` y el script `deploy`, alinear la versión del paquete (`0.0.1`) con el resto del repositorio y revisar el resultado de `npm audit`.
 - **Verificación:** los cuatro scripts se ejecutan desde la raíz y terminan sin errores.
 - **Demuestra:** calidad de código automatizada.
 
