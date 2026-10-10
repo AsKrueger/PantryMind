@@ -13,19 +13,22 @@ ese desperdicio y simplificar la planificación.
 
 ## Estado
 
-**En preparación, sin funcionalidades implementadas.**
+**En desarrollo, sin funcionalidades de producto implementadas.**
 
-El repositorio contiene por ahora únicamente la estructura del monorepo, la
-configuración común y la documentación inicial. Todavía no hay código de
-aplicación. La planificación está en la [hoja de ruta](docs/roadmap.md).
+Lo único que existe por ahora es una API mínima con un endpoint de salud
+(`GET /health`). No hay base de datos, autenticación, interfaz web ni lógica
+de inventario, recetas o listas de la compra. La planificación está en la
+[hoja de ruta](docs/roadmap.md).
 
-## Stack previsto
+## Stack
 
-Estas tecnologías están planificadas, pero aún no están instaladas ni
-configuradas:
+Instalado:
+
+- **Backend:** NestJS 12 (`@nestjs/core` 12.1.2) sobre Express, en `apps/api`.
+
+Previsto, aún sin instalar ni configurar:
 
 - **Frontend:** React con Vite.
-- **Backend:** NestJS.
 - **Acceso a datos:** Prisma.
 - **Base de datos:** PostgreSQL.
 
@@ -43,15 +46,43 @@ cd PantryMind
 npm install
 ```
 
-El proyecto todavía no tiene dependencias, así que `npm install` solo
-prepara los workspaces y comprueba el archivo `package-lock.json`.
+`npm install` se ejecuta siempre en la raíz: instala las dependencias de
+todos los workspaces y mantiene un único `package-lock.json`.
+
+## Arrancar la API en desarrollo
+
+Desde la raíz del repositorio:
+
+```text
+npm run start:dev -w @pantrymind/api
+```
+
+La API escucha en el puerto indicado por la variable de entorno `PORT` o,
+si no está definida, en el `3000`. Para comprobar que funciona, abre
+<http://localhost:3000/health>; la respuesta es:
+
+```json
+{ "status": "ok" }
+```
+
+## Tests de la API
+
+Desde la raíz del repositorio:
+
+```text
+npm run test -w @pantrymind/api
+npm run test:e2e -w @pantrymind/api
+```
+
+El primer comando ejecuta los tests unitarios y el segundo los tests de
+extremo a extremo, que arrancan la aplicación y hacen peticiones HTTP reales.
 
 ## Estructura de carpetas
 
 ```text
 .
 ├── apps/
-│   ├── api/        Backend (pendiente)
+│   ├── api/        Backend: API con NestJS
 │   └── web/        Frontend (pendiente)
 ├── docs/
 │   ├── adr/        Registros de decisiones de arquitectura
