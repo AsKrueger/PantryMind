@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Artefactos de compilación y de tests
+dist/
+build/
+coverage/
+
+# Variables de entorno (solo se versiona la plantilla)
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+Desktop.ini
