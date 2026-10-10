@@ -1,6 +1,6 @@
 # Hoja de ruta de PantryMind
 
-Estado: **en preparación**. Ninguna Issue está cerrada todavía.
+Estado: **en desarrollo**. La Issue 0 está cerrada; el resto, pendientes.
 Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada Issue.
 
 ## Cómo leer este documento
@@ -26,6 +26,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 ## Fase 0. Cimientos
 
 ### 0. Inicializar repositorio y estructura del monorepo
+- **Estado:** cerrada.
 - **Depende de:** nada.
 - **Entregable:** npm workspaces, carpetas `apps/api`, `apps/web`, `docs/adr`; `.gitignore`, `.gitattributes`, `.editorconfig`, `.nvmrc`, `.env.example`; README inicial; ADR 0001.
 - **Verificación:** `npm install` en la raíz sin errores; `git ls-files --eol` muestra `i/lf`; README visible en GitHub.
