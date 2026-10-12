@@ -98,9 +98,12 @@ Desde la raíz del repositorio, con la base de datos en marcha:
 npm run start:dev -w @pantrymind/api
 ```
 
-La API lee las variables del archivo `.env` de la raíz y se conecta a la base
-de datos al arrancar. Escucha en el puerto indicado por la variable de
-entorno `PORT` o, si no está definida, en el `3000`. Para comprobar que
+La API lee su configuración del archivo `.env` de la raíz y del entorno, la
+valida y se conecta a la base de datos al arrancar. Si falta una variable
+obligatoria o tiene un valor inválido, no arranca y explica cuál; las
+variables están descritas en [docs/environment.md](docs/environment.md).
+Escucha en el puerto indicado por la variable de entorno `PORT` o, si no está
+definida, en el `3000`. Para comprobar que
 funciona, abre <http://localhost:3000/health>; la respuesta es:
 
 ```json
@@ -217,5 +220,6 @@ ejecución en `develop`. El workflow está en
 - [Hoja de ruta](docs/roadmap.md)
 - [Puesta en marcha en Windows](docs/setup-windows.md)
 - [Puesta en marcha en Linux](docs/setup-linux.md)
+- [Variables de entorno](docs/environment.md)
 - [ADR 0001: Monorepo con npm workspaces](docs/adr/0001-monorepo-npm-workspaces.md)
 - [ADR 0002: PostgreSQL en Docker Compose y acceso a datos con Prisma](docs/adr/0002-postgresql-docker-prisma.md)
