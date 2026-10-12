@@ -58,3 +58,52 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  # Tests que necesitan PostgreSQL. Solo corren en Linux porque los
+  # contenedores de servicio de GitHub Actions no están disponibles en los
+  # runners de Windows. La portabilidad del resto del proyecto la sigue
+  # comprobando la matriz del job anterior.
+  integration:
+    name: Integration (ubuntu-latest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Credenciales de test, no sensibles: la base de datos existe solo durante
+    # el job. La CI usa una única base de datos, la de test, para todo.
+    env:
+      DATABASE_URL: postgresql://pantrymind:pantrymind_ci@127.0.0.1:5432/pantrymind_test
+      DATABASE_URL_TEST: postgresql://pantrymind:pantrymind_ci@127.0.0.1:5432/pantrymind_test
+    services:
+      postgres:
+        # Misma versión mayor que docker-compose.yml.
+        image: postgres:18
+        env:
+          POSTGRES_USER: pantrymind
+          POSTGRES_PASSWORD: pantrymind_ci
+          POSTGRES_DB: pantrymind_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pantrymind -d pantrymind_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply migrations
+        run: npm run db:deploy -w @pantrymind/api
+
+      - name: Test integration (API)
+        run: npm run test:integration -w @pantrymind/api
