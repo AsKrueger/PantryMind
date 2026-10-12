@@ -1,6 +1,6 @@
 # Hoja de ruta de PantryMind
 
-Estado: **en desarrollo**. Las Issues 0, 1, 2 y 3 están cerradas; el resto, pendientes.
+Estado: **en desarrollo**. Las Issues 0 a 4 están cerradas y la 5 está en curso; el resto, pendientes.
 Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada Issue.
 
 ## Cómo leer este documento
@@ -59,6 +59,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 4. Integración continua
 
+- **Estado:** cerrada.
 - **Depende de:** 3.
 - **Entregable:** workflow de GitHub Actions que ejecuta lint, typecheck, test y build en Windows y Linux.
 - **Verificación:** el workflow termina en verde en ambos sistemas en un pull request.
@@ -70,8 +71,9 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 5. PostgreSQL local, Prisma y primera migración
 
+- **Estado:** en curso.
 - **Depende de:** 1.
-- **Entregable:** PostgreSQL en local (Docker Compose o instalación nativa, según el diagnóstico); Prisma configurado; modelo `User`; primera migración; guías de Windows y Linux iniciadas.
+- **Entregable:** PostgreSQL en local con Docker Compose (ver [ADR 0002](adr/0002-postgresql-docker-prisma.md)); Prisma configurado; modelo `User`; primera migración; guías de Windows y Linux iniciadas.
 - **Verificación:** la migración se aplica en una base de datos vacía; un test de integración lee y escribe un usuario.
 - **Demuestra:** bases de datos relacionales, ORM y migraciones versionadas.
 

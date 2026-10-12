@@ -17,9 +17,10 @@ ese desperdicio y simplificar la planificación.
 
 **En desarrollo, sin funcionalidades de producto implementadas.**
 
-Lo único que existe por ahora es una API mínima con un endpoint de salud
-(`GET /health`) y una web mínima con una página inicial. La web todavía no
-se comunica con la API. No hay base de datos, autenticación ni lógica de
+Lo que existe por ahora es una API mínima con un endpoint de salud
+(`GET /health`), una web mínima con una página inicial y una base de datos
+PostgreSQL local con una única tabla, la de usuarios, que ningún endpoint usa
+todavía. La web no se comunica con la API. No hay autenticación ni lógica de
 inventario, recetas o listas de la compra. La planificación está en la
 [hoja de ruta](docs/roadmap.md).
 
@@ -31,19 +32,27 @@ Instalado:
 - **Frontend:** React 19.3.0 con Vite 8.3.4 y TypeScript, en `apps/web`.
 - **Tests:** Vitest 4.1.11 en los dos workspaces; en la web, además,
   Testing Library para React 16.3.3, `jest-dom` 7.0.1 y jsdom 30.1.2.
+- **Base de datos:** PostgreSQL 18, en un contenedor con Docker Compose.
+- **Acceso a datos:** Prisma ORM 7.10.0 con el adaptador `@prisma/adapter-pg`.
 
-Previsto, aún sin instalar ni configurar:
-
-- **Acceso a datos:** Prisma.
-- **Base de datos:** PostgreSQL.
+Las razones están en el
+[ADR 0002](docs/adr/0002-postgresql-docker-prisma.md).
 
 ## Requisitos
 
 - Node.js 24 (la versión está indicada en `.nvmrc`).
 - npm 11.
 - Git.
+- Docker con Docker Compose, para la base de datos.
 
 ## Instalación
+
+Las guías paso a paso, con los problemas habituales, están en:
+
+- [Puesta en marcha en Windows](docs/setup-windows.md)
+- [Puesta en marcha en Linux](docs/setup-linux.md)
+
+En resumen, desde la raíz del repositorio:
 
 ```text
 git clone https://github.com/AsKrueger/PantryMind.git
@@ -51,20 +60,48 @@ cd PantryMind
 npm install
 ```
 
+Después, copia `.env.example` con el nombre `.env`, levanta la base de datos
+y aplica las migraciones:
+
+```text
+npm run db:up
+npm run db:deploy -w @pantrymind/api
+```
+
 `npm install` se ejecuta siempre en la raíz: instala las dependencias de
 todos los workspaces y mantiene un único `package-lock.json`.
 
+## Base de datos
+
+PostgreSQL se ejecuta en un contenedor; no hay que instalarlo. Los comandos
+se ejecutan desde la raíz del repositorio:
+
+| Comando                                      | Qué hace                                                    |
+| -------------------------------------------- | ----------------------------------------------------------- |
+| `npm run db:up`                              | Levanta PostgreSQL en segundo plano y espera a que responda |
+| `npm run db:down`                            | Lo detiene; los datos se conservan                          |
+| `npm run db:deploy -w @pantrymind/api`       | Aplica las migraciones existentes                           |
+| `npm run db:migrate -w @pantrymind/api`      | Crea una migración a partir del esquema y la aplica         |
+| `npm run prisma:generate -w @pantrymind/api` | Regenera el cliente de Prisma; no necesita base de datos    |
+
+El contenedor aloja dos bases de datos: `pantrymind`, para desarrollo, y
+`pantrymind_test`, que solo usan los tests de integración.
+
+El cliente de Prisma no se versiona. Se regenera solo antes de `lint`,
+`typecheck`, `build` y los tests.
+
 ## Arrancar la API en desarrollo
 
-Desde la raíz del repositorio:
+Desde la raíz del repositorio, con la base de datos en marcha:
 
 ```text
 npm run start:dev -w @pantrymind/api
 ```
 
-La API escucha en el puerto indicado por la variable de entorno `PORT` o,
-si no está definida, en el `3000`. Para comprobar que funciona, abre
-<http://localhost:3000/health>; la respuesta es:
+La API lee las variables del archivo `.env` de la raíz y se conecta a la base
+de datos al arrancar. Escucha en el puerto indicado por la variable de
+entorno `PORT` o, si no está definida, en el `3000`. Para comprobar que
+funciona, abre <http://localhost:3000/health>; la respuesta es:
 
 ```json
 { "status": "ok" }
@@ -77,10 +114,16 @@ Desde la raíz del repositorio:
 ```text
 npm run test -w @pantrymind/api
 npm run test:e2e -w @pantrymind/api
+npm run test:integration -w @pantrymind/api
 ```
 
 El primer comando ejecuta los tests unitarios y el segundo los tests de
 extremo a extremo, que arrancan la aplicación y hacen peticiones HTTP reales.
+Ninguno de los dos necesita base de datos.
+
+El tercero ejecuta los tests de integración: necesita PostgreSQL en marcha,
+aplica las migraciones a `pantrymind_test` y nunca toca la base de datos de
+desarrollo.
 
 ## Arrancar la web en desarrollo
 
@@ -133,6 +176,9 @@ extremo de la API. El proyecto se verifica en dos sistemas:
 - **Linux** (`ubuntu-latest`).
 - **Windows** (`windows-latest`).
 
+Un job aparte ejecuta los tests de integración contra PostgreSQL, solo en
+Linux: GitHub Actions no ofrece contenedores de servicio en Windows.
+
 La insignia del principio de este documento muestra el estado de la última
 ejecución en `develop`. El workflow está en
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
@@ -145,10 +191,15 @@ ejecución en `develop`. El workflow está en
 │   └── workflows/  Integración continua (GitHub Actions)
 ├── apps/
 │   ├── api/        Backend: API con NestJS
+│   │   └── prisma/ Esquema de datos y migraciones
 │   └── web/        Frontend: web con React y Vite
+├── docker/
+│   └── postgres/   Script de inicialización de la base de datos
 ├── docs/
 │   ├── adr/        Registros de decisiones de arquitectura
-│   └── roadmap.md  Hoja de ruta
+│   ├── roadmap.md  Hoja de ruta
+│   └── setup-*.md  Guías de puesta en marcha en Windows y Linux
+├── docker-compose.yml  PostgreSQL local
 ├── .editorconfig     Estilo de edición común a todos los editores
 ├── .env.example      Plantilla de variables de entorno
 ├── .gitattributes    Normalización de finales de línea
@@ -164,4 +215,7 @@ ejecución en `develop`. El workflow está en
 
 - [Guía de contribución](CONTRIBUTING.md)
 - [Hoja de ruta](docs/roadmap.md)
+- [Puesta en marcha en Windows](docs/setup-windows.md)
+- [Puesta en marcha en Linux](docs/setup-linux.md)
 - [ADR 0001: Monorepo con npm workspaces](docs/adr/0001-monorepo-npm-workspaces.md)
+- [ADR 0002: PostgreSQL en Docker Compose y acceso a datos con Prisma](docs/adr/0002-postgresql-docker-prisma.md)
