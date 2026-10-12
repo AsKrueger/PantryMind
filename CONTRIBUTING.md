@@ -18,14 +18,15 @@ Pasos habituales:
 2. Crear la rama de trabajo desde `develop`.
 3. Hacer los cambios y comprobar que pasan los comandos de calidad.
 4. Abrir un pull request hacia `develop` que enlace la Issue correspondiente.
-5. Tras la fusión, eliminar la rama de trabajo.
+5. Esperar a que la integración continua termine en verde en Linux y en
+   Windows. Un pull request no se fusiona con la CI en rojo o sin terminar.
+6. Tras la fusión, eliminar la rama de trabajo.
 
 ## Integración de `develop` en `main`
 
-`develop` se integra en `main` mediante un pull request cuando el trabajo
-acumulado está completo y verificado: al cerrar una Issue o un grupo de Issues
-que dejan el proyecto en un estado estable. `main` no recibe cambios por
-ninguna otra vía.
+`develop` se integra en `main` al cerrar una fase de la
+[hoja de ruta](docs/roadmap.md), con la CI en verde en `develop`, mediante un
+pull request desde `develop`. `main` no recibe cambios por ninguna otra vía.
 
 ## Commits
 
@@ -84,6 +85,16 @@ npm run build
 | `npm run build`        | Que los dos workspaces compilan                            |
 
 Si `format:check` falla, `npm run format` corrige el formato automáticamente.
+
+## Integración continua
+
+El workflow `.github/workflows/ci.yml` ejecuta estos mismos comandos, en el
+mismo orden y precedidos de `npm ci`, en cada pull request hacia `develop` o
+`main` y en cada push a esas ramas. Lo hace en Linux y en Windows; los dos
+deben terminar en verde para poder fusionar.
+
+Si la CI falla en un solo sistema, se corrige la causa en el repositorio. No
+se añaden condiciones por sistema operativo al workflow para ocultarla.
 
 ## Estilo del código
 
