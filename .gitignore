@@ -7,6 +7,9 @@ build/
 coverage/
 *.tsbuildinfo
 
+# Cliente de Prisma: se genera a partir del esquema con "prisma generate"
+apps/api/src/generated/
+
 # Variables de entorno (solo se versiona la plantilla)
 .env
 .env.*

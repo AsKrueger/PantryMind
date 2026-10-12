@@ -1,0 +1,29 @@
+// Esquema de datos de PantryMind.
+//
+// Convención: en el código los nombres van en camelCase y los modelos en
+// singular; en la base de datos, tablas y columnas van en snake_case y las
+// tablas en plural. La correspondencia se declara con @map y @@map.
+
+generator client {
+  provider     = "prisma-client"
+  // Ruta relativa a este archivo. El cliente generado no se versiona.
+  output       = "../src/generated/prisma"
+  // @pantrymind/api es un paquete ESM ("type": "module").
+  moduleFormat = "esm"
+}
+
+// La URL de conexión no va aquí: la CLI la lee de prisma7.config.ts y la
+// aplicación se la pasa al adaptador en PrismaService.
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("users")
+}
