@@ -86,12 +86,21 @@ npm run build
 
 Si `format:check` falla, `npm run format` corrige el formato automáticamente.
 
+Si el cambio afecta a la base de datos, también deben pasar los tests de
+integración, que necesitan PostgreSQL en marcha (`npm run db:up`):
+
+```text
+npm run test:integration -w @pantrymind/api
+```
+
 ## Integración continua
 
 El workflow `.github/workflows/ci.yml` ejecuta estos mismos comandos, en el
 mismo orden y precedidos de `npm ci`, en cada pull request hacia `develop` o
 `main` y en cada push a esas ramas. Lo hace en Linux y en Windows; los dos
-deben terminar en verde para poder fusionar.
+deben terminar en verde para poder fusionar. Un tercer job, solo en Linux,
+aplica las migraciones a un PostgreSQL de servicio y ejecuta los tests de
+integración; también debe terminar en verde.
 
 Si la CI falla en un solo sistema, se corrige la causa en el repositorio. No
 se añaden condiciones por sistema operativo al workflow para ocultarla.
