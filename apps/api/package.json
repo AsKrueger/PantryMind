@@ -9,9 +9,9 @@
   "scripts": {
     "prebuild": "npm run prisma:generate",
     "build": "nest build",
-    "start": "nest start --env-file ../../.env",
-    "start:dev": "nest start --watch --env-file ../../.env",
-    "start:debug": "nest start --debug --watch --env-file ../../.env",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "prelint": "npm run prisma:generate",
     "lint": "oxlint --type-aware src/ test/",
@@ -32,12 +32,14 @@
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
+    "@nestjs/config": "^12.0.1",
     "@nestjs/core": "^12.0.1",
     "@nestjs/platform-express": "^12.0.1",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@nestjs/cli": "^12.0.0",
