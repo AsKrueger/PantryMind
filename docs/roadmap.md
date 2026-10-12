@@ -1,6 +1,6 @@
 # Hoja de ruta de PantryMind
 
-Estado: **en desarrollo**. Las Issues 0, 1 y 2 están cerradas; el resto, pendientes.
+Estado: **en desarrollo**. Las Issues 0, 1, 2 y 3 están cerradas; el resto, pendientes.
 Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada Issue.
 
 ## Cómo leer este documento
@@ -51,6 +51,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 3. Linting, formato y comprobación de tipos
 
+- **Estado:** cerrada.
 - **Depende de:** 1, 2.
 - **Entregable:** oxlint y Prettier configurados de forma coherente en los dos workspaces; scripts raíz `lint`, `format`, `typecheck`, `test`; limpieza pendiente del scaffold de la API: decidir si se conserva `@nestjs/mau` y el script `deploy`, alinear la versión del paquete (`0.0.1`) con el resto del repositorio y revisar el resultado de `npm audit`.
 - **Verificación:** los cuatro scripts se ejecutan desde la raíz y terminan sin errores.

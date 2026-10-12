@@ -1,5 +1,7 @@
 # PantryMind
 
+[![CI](https://github.com/AsKrueger/PantryMind/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/AsKrueger/PantryMind/actions/workflows/ci.yml?query=branch%3Adevelop)
+
 Aplicación web para gestionar el inventario de alimentos de casa, las recetas
 y las listas de la compra.
 
@@ -122,10 +124,25 @@ npm run build
   Los tests de extremo a extremo de la API siguen en su propio comando.
 - `build` compila los dos workspaces.
 
+## Integración continua
+
+Cada pull request hacia `develop` o `main`, y cada push a esas ramas, ejecuta
+en GitHub Actions los comandos de calidad anteriores y los tests de extremo a
+extremo de la API. El proyecto se verifica en dos sistemas:
+
+- **Linux** (`ubuntu-latest`).
+- **Windows** (`windows-latest`).
+
+La insignia del principio de este documento muestra el estado de la última
+ejecución en `develop`. El workflow está en
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
 ## Estructura de carpetas
 
 ```text
 .
+├── .github/
+│   └── workflows/  Integración continua (GitHub Actions)
 ├── apps/
 │   ├── api/        Backend: API con NestJS
 │   └── web/        Frontend: web con React y Vite
