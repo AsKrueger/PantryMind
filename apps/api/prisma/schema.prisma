@@ -27,5 +27,26 @@ model User {
   // Prisma; @updatedAt la actualiza en cada cambio hecho con Prisma.
   updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
+  refreshTokens RefreshToken[]
+
   @@map("users")
+}
+
+// Refresh tokens de sesión. Solo se guarda el hash SHA-256 del valor: quien
+// lea la tabla no puede usar los tokens. Todos los tokens que salen del mismo
+// login comparten familyId (ver docs/adr/0004-session-tokens.md).
+model RefreshToken {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  familyId  String    @map("family_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
 }

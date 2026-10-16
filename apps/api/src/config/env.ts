@@ -10,6 +10,10 @@ export const envSchema = z.object({
   // Las variables de entorno son siempre texto: se convierte a número.
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
   DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
+  // Clave con la que se firman los tokens de acceso (HS256).
+  JWT_ACCESS_SECRET: z.string().min(32),
+  JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().positive().default(900),
+  REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(7),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -21,6 +25,9 @@ const invalidReasons: Record<keyof Env, string> = {
   NODE_ENV: 'debe ser "development", "test" o "production"',
   PORT: 'debe ser un número entero entre 1 y 65535',
   DATABASE_URL: 'debe ser una URL con protocolo "postgresql" o "postgres"',
+  JWT_ACCESS_SECRET: 'debe tener al menos 32 caracteres',
+  JWT_ACCESS_TTL_SECONDS: 'debe ser un número entero positivo',
+  REFRESH_TOKEN_TTL_DAYS: 'debe ser un número entero positivo',
 };
 
 /**

@@ -53,6 +53,13 @@ export class UsersService {
     }
   }
 
+  findPublicById(id: string): Promise<PublicUser | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true, createdAt: true },
+    });
+  }
+
   findCredentialsByEmail(email: string): Promise<UserCredentials | null> {
     return this.prisma.user.findUnique({
       where: { email },

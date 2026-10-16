@@ -1,6 +1,6 @@
 # Hoja de ruta de PantryMind
 
-Estado: **en desarrollo**. Las Issues 0 a 6 están cerradas y la 7 está en curso; el resto, pendientes.
+Estado: **en desarrollo**. Las Issues 0 a 7 están cerradas y la 8 está en curso; el resto, pendientes.
 Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada Issue.
 
 ## Cómo leer este documento
@@ -89,7 +89,8 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 7. Registro e inicio de sesión en la API
 
-- **Estado:** en curso.
+- **Estado:** cerrada.
+- **Horas reales:** HORAS_ISSUE_7.
 - **Depende de:** 6.
 - **Entregable:** `POST /auth/register` y `POST /auth/login`; hash de contraseñas; validación de entradas.
 - **Verificación:** tests de registro correcto, correo duplicado, contraseña incorrecta y entradas inválidas; la contraseña nunca aparece en respuestas ni logs.
@@ -97,6 +98,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 8. Sesión, refresh token y guard de autorización
 
+- **Estado:** en curso.
 - **Depende de:** 7.
 - **Entregable:** token de acceso corto, refresh token rotatorio en cookie httpOnly, logout, guard reutilizable, `GET /users/me`; ADR de autenticación.
 - **Verificación:** tests de ruta protegida sin token (401), token caducado, refresh válido y refresh reutilizado.

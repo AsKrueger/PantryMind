@@ -23,17 +23,55 @@ La API valida estas variables al arrancar. Si alguna falta o no es válida, no
 arranca: termina con código de salida 1 y un mensaje que nombra cada variable
 y el motivo, sin mostrar nunca el valor recibido.
 
-| Variable       | Obligatoria | Valor por defecto | Validación                                  | Ejemplo                                                            | Sensible |
-| -------------- | ----------- | ----------------- | ------------------------------------------- | ------------------------------------------------------------------ | -------- |
-| `NODE_ENV`     | No          | `development`     | `development`, `test` o `production`        | `production`                                                       | No       |
-| `PORT`         | No          | `3000`            | Entero entre 1 y 65535                      | `8080`                                                             | No       |
-| `DATABASE_URL` | Sí          | —                 | URL con protocolo `postgresql` o `postgres` | `postgresql://pantrymind:pantrymind_dev@127.0.0.1:5432/pantrymind` | **Sí**   |
+| Variable                 | Obligatoria | Valor por defecto | Validación                                  | Ejemplo                                                            | Sensible |
+| ------------------------ | ----------- | ----------------- | ------------------------------------------- | ------------------------------------------------------------------ | -------- |
+| `NODE_ENV`               | No          | `development`     | `development`, `test` o `production`        | `production`                                                       | No       |
+| `PORT`                   | No          | `3000`            | Entero entre 1 y 65535                      | `8080`                                                             | No       |
+| `DATABASE_URL`           | Sí          | —                 | URL con protocolo `postgresql` o `postgres` | `postgresql://pantrymind:pantrymind_dev@127.0.0.1:5432/pantrymind` | **Sí**   |
+| `JWT_ACCESS_SECRET`      | Sí          | —                 | Al menos 32 caracteres                      | Generado: ver más abajo                                            | **Sí**   |
+| `JWT_ACCESS_TTL_SECONDS` | No          | `900`             | Entero positivo                             | `300`                                                              | No       |
+| `REFRESH_TOKEN_TTL_DAYS` | No          | `7`               | Entero positivo                             | `30`                                                               | No       |
 
 - `NODE_ENV` indica el entorno en el que corre la API. Vitest la pone a
-  `test` durante los tests.
+  `test` durante los tests. En `production`, la cookie del refresh token se
+  marca `Secure` y solo viaja por HTTPS; no hay una variable aparte para eso.
 - `PORT` es el puerto en el que escucha la API.
 - `DATABASE_URL` es la conexión a PostgreSQL. Contiene usuario y contraseña:
   fuera de tu máquina es un secreto. La API nunca la escribe en los logs.
+- `JWT_ACCESS_SECRET` es la clave con la que la API firma los tokens de
+  acceso (HS256). Quien la conozca puede fabricar tokens válidos para
+  cualquier usuario: es un secreto en todos los entornos salvo los tests.
+  Cambiarla invalida todos los tokens de acceso emitidos.
+- `JWT_ACCESS_TTL_SECONDS` es la duración de un token de acceso, en segundos.
+- `REFRESH_TOKEN_TTL_DAYS` es la duración de un refresh token, en días. Cada
+  refresh emite uno nuevo con la duración completa.
+
+### Generar `JWT_ACCESS_SECRET`
+
+El valor de `.env.example` es de ejemplo y no sirve fuera de tu máquina.
+Genera uno aleatorio con un generador criptográficamente seguro. Con Node.js,
+igual en PowerShell y en Linux:
+
+```text
+node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"
+```
+
+Solo con PowerShell 5.1:
+
+```powershell
+$bytes = New-Object byte[] 48
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
+```
+
+Solo con Linux:
+
+```bash
+openssl rand -base64 48
+```
+
+Las tres producen 48 bytes aleatorios, unos 64 caracteres. No uses
+`Get-Random`: no es un generador criptográficamente seguro.
 
 Ejemplo de mensaje con una configuración inválida:
 
@@ -89,16 +127,19 @@ pasa a la API como `DATABASE_URL`.
 
 ## Quién lee cada variable
 
-| Variable            | API | CLI de Prisma | Tests de integración | Docker Compose |
-| ------------------- | --- | ------------- | -------------------- | -------------- |
-| `NODE_ENV`          | Sí  | No            | No                   | No             |
-| `PORT`              | Sí  | No            | No                   | No             |
-| `DATABASE_URL`      | Sí  | Sí            | No                   | No             |
-| `DATABASE_URL_TEST` | No  | No            | Sí                   | No             |
-| `POSTGRES_USER`     | No  | No            | No                   | Sí             |
-| `POSTGRES_PASSWORD` | No  | No            | No                   | Sí             |
-| `POSTGRES_DB`       | No  | No            | No                   | Sí             |
-| `POSTGRES_PORT`     | No  | No            | No                   | Sí             |
+| Variable                 | API | CLI de Prisma | Tests de integración | Docker Compose |
+| ------------------------ | --- | ------------- | -------------------- | -------------- |
+| `NODE_ENV`               | Sí  | No            | No                   | No             |
+| `PORT`                   | Sí  | No            | No                   | No             |
+| `DATABASE_URL`           | Sí  | Sí            | No                   | No             |
+| `JWT_ACCESS_SECRET`      | Sí  | No            | No                   | No             |
+| `JWT_ACCESS_TTL_SECONDS` | Sí  | No            | No                   | No             |
+| `REFRESH_TOKEN_TTL_DAYS` | Sí  | No            | No                   | No             |
+| `DATABASE_URL_TEST`      | No  | No            | Sí                   | No             |
+| `POSTGRES_USER`          | No  | No            | No                   | Sí             |
+| `POSTGRES_PASSWORD`      | No  | No            | No                   | Sí             |
+| `POSTGRES_DB`            | No  | No            | No                   | Sí             |
+| `POSTGRES_PORT`          | No  | No            | No                   | Sí             |
 
 Cada herramienta carga el archivo `.env` por su cuenta:
 
@@ -109,6 +150,11 @@ Cada herramienta carga el archivo `.env` por su cuenta:
 | Tests de integración  | `apps/api/vitest.config.integration.ts` lo carga con `dotenv` |
 | Docker Compose        | Lee `.env` de la carpeta de `docker-compose.yml` por sí solo  |
 | Tests unitarios y e2e | No lo leen: no necesitan base de datos ni archivo `.env`      |
+
+Los tests de integración arrancan la API, así que también necesitan
+`JWT_ACCESS_SECRET`: en local la toman del `.env` y en la CI, del workflow.
+Los e2e usan un secreto de test fijo definido en
+`apps/api/vitest.config.e2e.ts`.
 
 La CLI de Prisma no pasa por la validación de la API: `prisma generate`
 funciona sin `DATABASE_URL`, y los comandos que sí necesitan base de datos

@@ -17,11 +17,12 @@ ese desperdicio y simplificar la planificación.
 
 **En desarrollo, sin funcionalidades de producto implementadas.**
 
-Lo que existe por ahora es una API con un endpoint de salud y el registro e
-inicio de sesión de usuarios (ver [Endpoints de la API](#endpoints-de-la-api)),
-una web mínima con una página inicial y una base de datos PostgreSQL local con
-la tabla de usuarios. La web no se comunica con la API. Todavía no hay sesión
-(tokens) ni lógica de inventario, recetas o listas de la compra. La planificación está en la
+Lo que existe por ahora es una API con un endpoint de salud, registro, inicio
+de sesión con tokens y rutas protegidas (ver
+[Endpoints de la API](#endpoints-de-la-api)), una web mínima con una página
+inicial y una base de datos PostgreSQL local con usuarios y sesiones. La web
+no se comunica con la API. Todavía no hay lógica de inventario, recetas o
+listas de la compra. La planificación está en la
 [hoja de ruta](docs/roadmap.md).
 
 ## Stack
@@ -112,30 +113,45 @@ funciona, abre <http://localhost:3000/health>; la respuesta es:
 
 ## Endpoints de la API
 
-| Método y ruta         | Qué hace                      | Respuestas                                                    |
-| --------------------- | ----------------------------- | ------------------------------------------------------------- |
-| `GET /health`         | Comprueba que la API responde | `200`                                                         |
-| `POST /auth/register` | Crea un usuario               | `201`, `400` entrada inválida, `409` correo ya registrado     |
-| `POST /auth/login`    | Comprueba correo y contraseña | `200`, `400` entrada inválida, `401` credenciales incorrectas |
+Todas las rutas exigen un token de acceso salvo las marcadas como públicas.
 
-Los dos endpoints de `auth` reciben un JSON con `email` y `password`:
+| Método y ruta         | Acceso          | Qué hace                                    | Respuestas                                                    |
+| --------------------- | --------------- | ------------------------------------------- | ------------------------------------------------------------- |
+| `GET /health`         | Pública         | Comprueba que la API responde               | `200`                                                         |
+| `POST /auth/register` | Pública         | Crea un usuario; no inicia sesión           | `201`, `400` entrada inválida, `409` correo ya registrado     |
+| `POST /auth/login`    | Pública         | Inicia sesión                               | `200`, `400` entrada inválida, `401` credenciales incorrectas |
+| `POST /auth/refresh`  | Cookie          | Renueva el token de acceso y rota la cookie | `200`, `401`                                                  |
+| `POST /auth/logout`   | Cookie          | Cierra la sesión y borra la cookie          | `204`, también sin cookie válida                              |
+| `GET /users/me`       | Token de acceso | Devuelve el usuario autenticado             | `200`, `401`                                                  |
 
-- el correo se guarda sin espacios alrededor y en minúsculas, con un máximo de
-  254 caracteres;
-- la contraseña de registro debe tener entre 15 y 128 caracteres, sin reglas
-  de composición.
+- `register` y `login` reciben un JSON con `email` y `password`. El correo se
+  guarda sin espacios alrededor y en minúsculas, con un máximo de 254
+  caracteres. La contraseña de registro debe tener entre 15 y 128 caracteres,
+  sin reglas de composición.
+- `register` devuelve `id`, `email` y `createdAt`.
+- `login` devuelve `accessToken`, `expiresIn` (segundos) y `user` (`id` y
+  `email`), y deja el refresh token en la cookie `pm_refresh`.
+- `refresh` devuelve `accessToken` y `expiresIn`, y cambia la cookie por una
+  nueva. Una cookie ya usada cierra la sesión.
+- Las rutas protegidas reciben el token en `Authorization: Bearer <token>`.
+- Ninguna respuesta incluye la contraseña, su hash ni el refresh token. Todos
+  los `401` de sesión tienen el mismo cuerpo.
 
-El registro devuelve `id`, `email` y `createdAt`; el inicio de sesión, `id` y
-`email`. Ninguna respuesta incluye la contraseña ni su hash, y el inicio de
-sesión todavía no crea sesión. Las decisiones están en el
-[ADR 0003](docs/adr/0003-password-hashing.md).
+Las decisiones están en el [ADR 0003](docs/adr/0003-password-hashing.md) y el
+[ADR 0004](docs/adr/0004-session-tokens.md), y el resumen de seguridad en
+[docs/security.md](docs/security.md).
 
-Ejemplo en PowerShell, con la API arrancada:
+Ejemplo en PowerShell, con la API arrancada. `-SessionVariable` guarda la
+cookie y `-WebSession` la reenvía:
 
 ```powershell
+$api = 'http://localhost:3000'
 $body = @{ email = 'ana@example.com'; password = 'una frase de prueba larga' } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri http://localhost:3000/auth/register -ContentType 'application/json' -Body $body
-Invoke-RestMethod -Method Post -Uri http://localhost:3000/auth/login -ContentType 'application/json' -Body $body
+Invoke-RestMethod -Method Post -Uri "$api/auth/register" -ContentType 'application/json' -Body $body
+$login = Invoke-RestMethod -Method Post -Uri "$api/auth/login" -ContentType 'application/json' -Body $body -SessionVariable session
+Invoke-RestMethod -Uri "$api/users/me" -Headers @{ Authorization = "Bearer $($login.accessToken)" }
+Invoke-RestMethod -Method Post -Uri "$api/auth/refresh" -WebSession $session
+Invoke-RestMethod -Method Post -Uri "$api/auth/logout" -WebSession $session
 ```
 
 ## Tests de la API
@@ -228,7 +244,9 @@ ejecución en `develop`. El workflow está en
 │   └── postgres/   Script de inicialización de la base de datos
 ├── docs/
 │   ├── adr/        Registros de decisiones de arquitectura
+│   ├── environment.md  Variables de entorno
 │   ├── roadmap.md  Hoja de ruta
+│   ├── security.md Medidas de seguridad y vulnerabilidades conocidas
 │   └── setup-*.md  Guías de puesta en marcha en Windows y Linux
 ├── docker-compose.yml  PostgreSQL local
 ├── .editorconfig     Estilo de edición común a todos los editores
@@ -251,4 +269,6 @@ ejecución en `develop`. El workflow está en
 - [Variables de entorno](docs/environment.md)
 - [ADR 0001: Monorepo con npm workspaces](docs/adr/0001-monorepo-npm-workspaces.md)
 - [ADR 0002: PostgreSQL en Docker Compose y acceso a datos con Prisma](docs/adr/0002-postgresql-docker-prisma.md)
+- [Seguridad](docs/security.md)
 - [ADR 0003: Hash de contraseñas con Argon2id](docs/adr/0003-password-hashing.md)
+- [ADR 0004: Sesión con token de acceso y refresh token rotatorio](docs/adr/0004-session-tokens.md)

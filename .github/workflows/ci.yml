@@ -72,6 +72,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://pantrymind:pantrymind_ci@127.0.0.1:5432/pantrymind_test
       DATABASE_URL_TEST: postgresql://pantrymind:pantrymind_ci@127.0.0.1:5432/pantrymind_test
+      # Clave de firma de test, no sensible: solo firma tokens durante el job.
+      JWT_ACCESS_SECRET: ci-test-secret-not-for-production-use
     services:
       postgres:
         # Misma versión mayor que docker-compose.yml.

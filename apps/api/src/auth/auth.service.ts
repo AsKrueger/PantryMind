@@ -5,21 +5,32 @@ import {
   OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
+import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service.js';
 import {
   EmailAlreadyRegisteredError,
   PublicUser,
   UsersService,
 } from '../users/users.service.js';
+import { AccessToken, AccessTokenService } from './access-token.service.js';
+import {
+  EMAIL_CONFLICT_MESSAGE,
+  INVALID_CREDENTIALS_MESSAGE,
+  UNAUTHORIZED_MESSAGE,
+} from './auth.messages.js';
 import type { LoginInput, RegisterInput } from './auth.schemas.js';
 import { PasswordHasherService } from './password-hasher.service.js';
 
-export const EMAIL_CONFLICT_MESSAGE =
-  'No se ha podido completar el registro con ese correo';
-// El mismo mensaje para un correo inexistente y para una contraseña
-// incorrecta: la respuesta no revela qué correos están registrados.
-export const INVALID_CREDENTIALS_MESSAGE = 'Correo o contraseña incorrectos';
+/** Resultado de crear o renovar una sesión. */
+export interface SessionTokens extends AccessToken {
+  /** Va en la cookie, nunca en el cuerpo de la respuesta. */
+  refreshToken: string;
+}
 
-/** Reglas de registro y de comprobación de credenciales. */
+export interface LoginResult extends SessionTokens {
+  user: Pick<PublicUser, 'id' | 'email'>;
+}
+
+/** Reglas de registro, credenciales y sesión. */
 @Injectable()
 export class AuthService implements OnModuleInit {
   // Hash de una contraseña aleatoria que nadie conoce, con los mismos
@@ -30,6 +41,8 @@ export class AuthService implements OnModuleInit {
   constructor(
     private readonly users: UsersService,
     private readonly hasher: PasswordHasherService,
+    private readonly accessTokens: AccessTokenService,
+    private readonly refreshTokens: RefreshTokensService,
   ) {}
 
   async onModuleInit() {
@@ -48,10 +61,8 @@ export class AuthService implements OnModuleInit {
     }
   }
 
-  async login({
-    email,
-    password,
-  }: LoginInput): Promise<Pick<PublicUser, 'id' | 'email'>> {
+  /** Comprueba las credenciales y abre una sesión nueva. */
+  async login({ email, password }: LoginInput): Promise<LoginResult> {
     const user = await this.users.findCredentialsByEmail(email);
     const valid = await this.hasher.verify(
       user?.passwordHash ?? this.dummyHash,
@@ -60,6 +71,33 @@ export class AuthService implements OnModuleInit {
     if (!user || !valid) {
       throw new UnauthorizedException(INVALID_CREDENTIALS_MESSAGE);
     }
-    return { id: user.id, email: user.email };
+
+    const refreshToken = await this.refreshTokens.issue(user.id);
+    const accessToken = await this.accessTokens.sign(user.id);
+    return {
+      ...accessToken,
+      refreshToken,
+      user: { id: user.id, email: user.email },
+    };
+  }
+
+  /** Rota el refresh token y emite un token de acceso nuevo. */
+  async refresh(refreshToken: string | undefined): Promise<SessionTokens> {
+    const rotated = refreshToken
+      ? await this.refreshTokens.rotate(refreshToken)
+      : null;
+    if (!rotated) {
+      throw new UnauthorizedException(UNAUTHORIZED_MESSAGE);
+    }
+
+    const accessToken = await this.accessTokens.sign(rotated.userId);
+    return { ...accessToken, refreshToken: rotated.token };
+  }
+
+  /** Cierra la sesión revocando la familia del refresh token, si la hay. */
+  async logout(refreshToken: string | undefined): Promise<void> {
+    if (refreshToken) {
+      await this.refreshTokens.revokeFamily(refreshToken);
+    }
   }
 }
