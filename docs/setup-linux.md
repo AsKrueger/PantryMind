@@ -180,6 +180,16 @@ como .env`, o la API no arranca y responde `Configuración inválida` con
 
 Solución: repite el paso 3.
 
+### Falta una variable nueva en `.env`
+
+Síntomas: después de actualizar el repositorio, la API no arranca y responde
+`Configuración inválida` con una variable que tu `.env` no tiene, por ejemplo
+`JWT_ACCESS_SECRET: es obligatoria`.
+
+Solución: copia esa variable de `.env.example` a tu `.env`. Para
+`JWT_ACCESS_SECRET`, genera un valor propio como se explica en
+[environment.md](environment.md#generar-jwt_access_secret).
+
 ### La API no llega a la base de datos
 
 Síntoma: `Can't reach database server at 127.0.0.1:5432`.
