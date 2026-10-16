@@ -17,11 +17,11 @@ ese desperdicio y simplificar la planificación.
 
 **En desarrollo, sin funcionalidades de producto implementadas.**
 
-Lo que existe por ahora es una API mínima con un endpoint de salud
-(`GET /health`), una web mínima con una página inicial y una base de datos
-PostgreSQL local con una única tabla, la de usuarios, que ningún endpoint usa
-todavía. La web no se comunica con la API. No hay autenticación ni lógica de
-inventario, recetas o listas de la compra. La planificación está en la
+Lo que existe por ahora es una API con un endpoint de salud y el registro e
+inicio de sesión de usuarios (ver [Endpoints de la API](#endpoints-de-la-api)),
+una web mínima con una página inicial y una base de datos PostgreSQL local con
+la tabla de usuarios. La web no se comunica con la API. Todavía no hay sesión
+(tokens) ni lógica de inventario, recetas o listas de la compra. La planificación está en la
 [hoja de ruta](docs/roadmap.md).
 
 ## Stack
@@ -108,6 +108,34 @@ funciona, abre <http://localhost:3000/health>; la respuesta es:
 
 ```json
 { "status": "ok" }
+```
+
+## Endpoints de la API
+
+| Método y ruta         | Qué hace                      | Respuestas                                                    |
+| --------------------- | ----------------------------- | ------------------------------------------------------------- |
+| `GET /health`         | Comprueba que la API responde | `200`                                                         |
+| `POST /auth/register` | Crea un usuario               | `201`, `400` entrada inválida, `409` correo ya registrado     |
+| `POST /auth/login`    | Comprueba correo y contraseña | `200`, `400` entrada inválida, `401` credenciales incorrectas |
+
+Los dos endpoints de `auth` reciben un JSON con `email` y `password`:
+
+- el correo se guarda sin espacios alrededor y en minúsculas, con un máximo de
+  254 caracteres;
+- la contraseña de registro debe tener entre 15 y 128 caracteres, sin reglas
+  de composición.
+
+El registro devuelve `id`, `email` y `createdAt`; el inicio de sesión, `id` y
+`email`. Ninguna respuesta incluye la contraseña ni su hash, y el inicio de
+sesión todavía no crea sesión. Las decisiones están en el
+[ADR 0003](docs/adr/0003-password-hashing.md).
+
+Ejemplo en PowerShell, con la API arrancada:
+
+```powershell
+$body = @{ email = 'ana@example.com'; password = 'una frase de prueba larga' } | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri http://localhost:3000/auth/register -ContentType 'application/json' -Body $body
+Invoke-RestMethod -Method Post -Uri http://localhost:3000/auth/login -ContentType 'application/json' -Body $body
 ```
 
 ## Tests de la API
@@ -223,3 +251,4 @@ ejecución en `develop`. El workflow está en
 - [Variables de entorno](docs/environment.md)
 - [ADR 0001: Monorepo con npm workspaces](docs/adr/0001-monorepo-npm-workspaces.md)
 - [ADR 0002: PostgreSQL en Docker Compose y acceso a datos con Prisma](docs/adr/0002-postgresql-docker-prisma.md)
+- [ADR 0003: Hash de contraseñas con Argon2id](docs/adr/0003-password-hashing.md)

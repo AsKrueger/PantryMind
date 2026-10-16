@@ -23,7 +23,9 @@ model User {
   email        String   @unique
   passwordHash String   @map("password_hash")
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  // @default(now()) da valor a la columna también en las filas que no crea
+  // Prisma; @updatedAt la actualiza en cada cambio hecho con Prisma.
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   @@map("users")
 }

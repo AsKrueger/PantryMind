@@ -1,6 +1,6 @@
 # Hoja de ruta de PantryMind
 
-Estado: **en desarrollo**. Las Issues 0 a 5 están cerradas y la 6 está en curso; el resto, pendientes.
+Estado: **en desarrollo**. Las Issues 0 a 6 están cerradas y la 7 está en curso; el resto, pendientes.
 Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada Issue.
 
 ## Cómo leer este documento
@@ -80,7 +80,8 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 6. Configuración por variables de entorno
 
-- **Estado:** en curso.
+- **Estado:** cerrada.
+- **Horas reales:** HORAS_ISSUE_6.
 - **Depende de:** 5.
 - **Entregable:** módulo de configuración con validación al arrancar; `.env.example` completo; guía de variables.
 - **Verificación:** la API se niega a arrancar con una variable obligatoria ausente y muestra un mensaje claro.
@@ -88,6 +89,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 7. Registro e inicio de sesión en la API
 
+- **Estado:** en curso.
 - **Depende de:** 6.
 - **Entregable:** `POST /auth/register` y `POST /auth/login`; hash de contraseñas; validación de entradas.
 - **Verificación:** tests de registro correcto, correo duplicado, contraseña incorrecta y entradas inválidas; la contraseña nunca aparece en respuestas ni logs.
