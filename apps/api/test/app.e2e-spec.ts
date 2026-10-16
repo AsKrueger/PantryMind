@@ -29,6 +29,15 @@ describe('HealthController (e2e)', () => {
       .expect({ status: 'ok' });
   });
 
+  // El guard global responde antes de llegar a la base de datos.
+  it('/users/me (GET) without a token is rejected', () => {
+    return request(app.getHttpServer()).get('/users/me').expect(401).expect({
+      message: 'No autorizado',
+      error: 'Unauthorized',
+      statusCode: 401,
+    });
+  });
+
   afterEach(async () => {
     await app.close();
   });

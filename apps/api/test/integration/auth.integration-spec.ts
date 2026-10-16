@@ -126,18 +126,23 @@ describe('Auth (integration)', () => {
       userId = response.body.id;
     });
 
-    it('responds 200 with the id and email when the credentials are right', async () => {
+    it('responds 200 with the user when the credentials are right', async () => {
       const response = await login({ email: 'ana@example.com', password });
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ id: userId, email: 'ana@example.com' });
+      expect(response.body.user).toEqual({
+        id: userId,
+        email: 'ana@example.com',
+      });
+      expect(response.text).not.toContain(password);
+      expect(response.text).not.toContain('argon2');
     });
 
     it('accepts the email with other case or spaces', async () => {
       const response = await login({ email: ' ANA@Example.com', password });
 
       expect(response.status).toBe(200);
-      expect(response.body.id).toBe(userId);
+      expect(response.body.user.id).toBe(userId);
     });
 
     it('responds the same 401 for a wrong password and for an unknown email', async () => {
