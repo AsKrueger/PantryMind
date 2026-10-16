@@ -1,6 +1,6 @@
 # Hoja de ruta de PantryMind
 
-Estado: **en desarrollo**. Las Issues 0 a 4 están cerradas y la 5 está en curso; el resto, pendientes.
+Estado: **en desarrollo**. Las Issues 0 a 5 están cerradas y la 6 está en curso; el resto, pendientes.
 Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada Issue.
 
 ## Cómo leer este documento
@@ -71,7 +71,8 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 5. PostgreSQL local, Prisma y primera migración
 
-- **Estado:** en curso.
+- **Estado:** cerrada.
+- **Horas reales:** 0,75 h aproximadamente (sesión del 2026-10-12: implementación y verificación de 16:50 a 17:25, más pull request y CI).
 - **Depende de:** 1.
 - **Entregable:** PostgreSQL en local con Docker Compose (ver [ADR 0002](adr/0002-postgresql-docker-prisma.md)); Prisma configurado; modelo `User`; primera migración; guías de Windows y Linux iniciadas.
 - **Verificación:** la migración se aplica en una base de datos vacía; un test de integración lee y escribe un usuario.
@@ -79,6 +80,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 6. Configuración por variables de entorno
 
+- **Estado:** en curso.
 - **Depende de:** 5.
 - **Entregable:** módulo de configuración con validación al arrancar; `.env.example` completo; guía de variables.
 - **Verificación:** la API se niega a arrancar con una variable obligatoria ausente y muestra un mensaje claro.

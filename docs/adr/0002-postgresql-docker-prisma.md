@@ -60,6 +60,10 @@ Hay un único `.env` en la raíz. Docker Compose lo lee por sí solo; la CLI de
 Prisma y los tests de integración lo cargan con `dotenv`; la API lo recibe
 con la opción `--env-file` de Node.js en los scripts de desarrollo.
 
+> Actualización (Issue 6): la API ya no usa `--env-file`. Carga y valida su
+> configuración con `@nestjs/config` y Zod; ver
+> [environment.md](../environment.md).
+
 ## Alternativas consideradas
 
 ### PostgreSQL instalado de forma nativa

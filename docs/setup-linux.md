@@ -57,7 +57,7 @@ cp .env.example .env
 
 Hay un único `.env`, en la raíz, y Git lo ignora. Los valores de la plantilla
 sirven tal cual para desarrollo local. Cada variable está explicada en
-[`.env.example`](../.env.example).
+[environment.md](environment.md).
 
 Quién lee ese archivo:
 
@@ -65,7 +65,7 @@ Quién lee ese archivo:
 | --------------------- | ------------------------------------------------------------- |
 | Docker Compose        | Lee `.env` de la carpeta de `docker-compose.yml` por sí solo  |
 | CLI de Prisma         | `apps/api/prisma7.config.ts` lo carga con `dotenv`            |
-| API en desarrollo     | Los scripts `start*` pasan `--env-file ../../.env` a Node.js  |
+| API                   | Su módulo de configuración lo carga y valida al arrancar      |
 | Tests de integración  | `apps/api/vitest.config.integration.ts` lo carga con `dotenv` |
 | Tests unitarios y e2e | No lo leen: no necesitan base de datos                        |
 
@@ -175,7 +175,8 @@ y `DATABASE_URL_TEST`. Después repite `npm run db:up`.
 ### Falta el archivo `.env`
 
 Síntomas: `npm run db:up` responde `Falta POSTGRES_USER. Copia .env.example
-como .env`, o la API responde `node: ../../.env: not found`.
+como .env`, o la API no arranca y responde `Configuración inválida` con
+`DATABASE_URL: es obligatoria`.
 
 Solución: repite el paso 3.
 
