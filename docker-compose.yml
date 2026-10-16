@@ -1,0 +1,34 @@
+# Base de datos local de PantryMind. Solo PostgreSQL: la API y la web se
+# ejecutan fuera de Docker.
+#
+# Docker Compose lee las variables del archivo ".env" de esta misma carpeta.
+# Si falta alguna, se detiene con un mensaje en lugar de arrancar a medias.
+name: pantrymind
+
+services:
+  postgres:
+    # Versión mayor fija: las actualizaciones menores llegan al descargar la
+    # imagen de nuevo; un cambio de versión mayor es una decisión explícita.
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Falta POSTGRES_USER. Copia .env.example como .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD. Copia .env.example como .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Falta POSTGRES_DB. Copia .env.example como .env}
+    ports:
+      # Publicado solo en la interfaz local: no es accesible desde la red.
+      - '127.0.0.1:${POSTGRES_PORT:?Falta POSTGRES_PORT. Copia .env.example como .env}:5432'
+    volumes:
+      # Desde PostgreSQL 18 la imagen oficial guarda los datos bajo
+      # /var/lib/postgresql (antes, /var/lib/postgresql/data).
+      - postgres-data:/var/lib/postgresql
+      # Scripts SQL que se ejecutan una sola vez, al crear el volumen.
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  postgres-data:
