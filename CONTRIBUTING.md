@@ -30,32 +30,29 @@ pull request desde `develop`. `main` no recibe cambios por ninguna otra vía.
 
 ## Commits
 
-Los mensajes de commit siguen el formato
-[Conventional Commits](https://www.conventionalcommits.org/es/):
+Los mensajes de commit empiezan por el nombre de la rama de trabajo, que
+identifica la Issue, seguido de lo que hace el commit:
 
 ```text
-<tipo>(<ámbito opcional>): <descripción en imperativo y en minúsculas>
+<rama> <descripción en español, en presente y en minúsculas>
 ```
 
-Tipos más habituales en este proyecto:
-
-| Tipo       | Uso                                                       |
-| ---------- | --------------------------------------------------------- |
-| `feat`     | Nueva funcionalidad                                       |
-| `fix`      | Corrección de un error                                    |
-| `docs`     | Cambios solo en la documentación                          |
-| `style`    | Formato del código, sin cambios de comportamiento         |
-| `refactor` | Cambio interno que no añade funcionalidad ni corrige nada |
-| `test`     | Tests nuevos o modificados                                |
-| `chore`    | Mantenimiento: dependencias, configuración, limpieza      |
+- `<rama>` es `feature/issueN` para una tarea o funcionalidad, o
+  `bugfix/issueN` para corregir un error, con el número de la Issue.
+- La descripción dice qué hace el commit, en tercera persona del presente:
+  «añade», «corrige», «documenta», «actualiza».
 
 Ejemplos:
 
 ```text
-feat(api): add health endpoint
-chore: add root quality scripts
-style: apply prettier formatting
+feature/issue6 añade configuración validada con @nestjs/config y Zod
+feature/issue6 añade tests del esquema de configuración
+feature/issue6 documenta las variables de entorno
+bugfix/issue12 corrige el cálculo de la fecha de caducidad
 ```
+
+El formato completo se usa desde la Issue 4; algunos commits anteriores solo
+llevan el nombre de la rama.
 
 El mensaje contiene únicamente la descripción del cambio. Cada commit agrupa
 cambios con un mismo propósito; el formato aplicado de forma masiva va en un
