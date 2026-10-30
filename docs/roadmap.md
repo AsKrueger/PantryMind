@@ -106,6 +106,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 ### 9. Pantallas de registro e inicio de sesión
 
+- **Estado:** en curso.
 - **Depende de:** 2, 8.
 - **Entregable:** formularios con validación, cliente HTTP, rutas protegidas en el frontend, cierre de sesión.
 - **Verificación:** tests de componentes de los formularios; flujo manual registro → login → página protegida → logout.

@@ -21,7 +21,8 @@ Lo que existe por ahora es una API con un endpoint de salud, registro, inicio
 de sesión con tokens y rutas protegidas (ver
 [Endpoints de la API](#endpoints-de-la-api)), una web mínima con una página
 inicial y una base de datos PostgreSQL local con usuarios y sesiones. La web
-no se comunica con la API. Todavía no hay lógica de inventario, recetas o
+tiene las pantallas de registro e inicio de sesión y una página protegida, y
+usa la API a través del proxy de Vite en desarrollo. Todavía no hay lógica de inventario, recetas o
 listas de la compra. La planificación está en la
 [hoja de ruta](docs/roadmap.md).
 
@@ -31,6 +32,7 @@ Instalado:
 
 - **Backend:** NestJS 12 (`@nestjs/core` 12.3.2) sobre Express, en `apps/api`.
 - **Frontend:** React 19.3.1 con Vite 8.3.5 y TypeScript, en `apps/web`.
+  Enrutado con React Router 8.5.1.
 - **Tests:** Vitest 4.1.12 en los dos workspaces; en la web, además,
   Testing Library para React 16.3.3, `jest-dom` 7.0.1 y jsdom 30.1.3.
 - **Base de datos:** PostgreSQL 18, en un contenedor con Docker Compose.
@@ -181,8 +183,13 @@ npm run dev -w @pantrymind/web
 ```
 
 Vite muestra en la terminal la dirección en la que sirve la web, por defecto
-<http://localhost:5173>. La página muestra el encabezado "PantryMind" y un
-aviso de que la aplicación está en preparación.
+<http://localhost:5173>. Vite reenvía `/auth`, `/users` y `/health` a la API
+en `http://localhost:3000`, así que la API debe estar arrancada.
+
+Sin sesión, la web muestra el inicio de sesión; `/register` permite crear una
+cuenta. Con sesión, la página principal muestra el correo del usuario y un
+botón para cerrar sesión. El token de acceso vive solo en memoria: al recargar
+la página, la web recupera la sesión con la cookie del refresh token.
 
 ## Tests de la web
 
