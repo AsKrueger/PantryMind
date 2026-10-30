@@ -29,12 +29,12 @@ listas de la compra. La planificación está en la
 
 Instalado:
 
-- **Backend:** NestJS 12 (`@nestjs/core` 12.1.2) sobre Express, en `apps/api`.
-- **Frontend:** React 19.3.0 con Vite 8.3.4 y TypeScript, en `apps/web`.
-- **Tests:** Vitest 4.1.11 en los dos workspaces; en la web, además,
-  Testing Library para React 16.3.3, `jest-dom` 7.0.1 y jsdom 30.1.2.
+- **Backend:** NestJS 12 (`@nestjs/core` 12.3.2) sobre Express, en `apps/api`.
+- **Frontend:** React 19.3.1 con Vite 8.3.5 y TypeScript, en `apps/web`.
+- **Tests:** Vitest 4.1.12 en los dos workspaces; en la web, además,
+  Testing Library para React 16.3.3, `jest-dom` 7.0.1 y jsdom 30.1.3.
 - **Base de datos:** PostgreSQL 18, en un contenedor con Docker Compose.
-- **Acceso a datos:** Prisma ORM 7.10.0 con el adaptador `@prisma/adapter-pg`.
+- **Acceso a datos:** Prisma ORM 7.10.1 con el adaptador `@prisma/adapter-pg`.
 
 Las razones están en el
 [ADR 0002](docs/adr/0002-postgresql-docker-prisma.md).

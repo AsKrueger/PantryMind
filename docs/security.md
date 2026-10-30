@@ -67,14 +67,26 @@ Cada punto es una posible Issue independiente:
 ## Vulnerabilidades de dependencias
 
 `npm audit` se ejecuta en cada Issue. Resultado actual: **0
-vulnerabilidades** (2026-10-16).
+vulnerabilidades** (2026-10-30), en dependencias de producción y de
+desarrollo.
 
 ### Resueltas
 
-| Fecha      | Paquete                      | Severidad | Origen                      | Solución                             |
-| ---------- | ---------------------------- | --------- | --------------------------- | ------------------------------------ |
-| 2026-10-16 | `deepmerge-ts` 7.1.5         | Alta      | `prisma` → `@prisma/config` | Prisma 7.10.1 (`deepmerge-ts` 8.0.2) |
-| 2026-10-16 | `mysql2` 3.15.3 (dos avisos) | Alta      | `prisma`                    | Prisma 7.10.1 (`mysql2` 3.24.4)      |
+| Fecha      | Paquete                       | Severidad | Origen                           | Solución                                  |
+| ---------- | ----------------------------- | --------- | -------------------------------- | ----------------------------------------- |
+| 2026-10-30 | `multer` 2.0.0 - 2.4.0        | Alta      | `@nestjs/platform-express`       | `@nestjs/*` 12.3.2 (`multer` 2.5.0)       |
+| 2026-10-30 | `@nestjs/platform-express`    | Alta      | Versiones anteriores a 12.3.2    | `@nestjs/*` 12.3.2                        |
+| 2026-10-30 | `body-parser` 2.0.0 - 2.3.0   | Alta      | `express`                        | `@nestjs/*` 12.3.2 (`body-parser` 2.4.0)  |
+| 2026-10-30 | `qs` 6.7.0 - 6.16.0           | Moderada  | `express`                        | `@nestjs/*` 12.3.2 (`qs` 6.17.1)          |
+| 2026-10-30 | `fast-uri` 3.0.0 - 3.1.8      | Moderada  | `@nestjs/cli` → `ajv` (solo dev) | `npm audit fix` (`fast-uri` 3.1.9)        |
+| 2026-10-30 | `undici` 8.0.0 - 8.12.1 (dev) | Alta      | `jsdom`, solo en tests de web    | `jsdom` 30.1.3 (`undici` 8.12.3)          |
+| 2026-10-30 | `vitest` y `@vitest/mocker`   | Moderada  | Solo herramienta de tests        | `vitest` 4.1.12 (`@vitest/mocker` 4.1.12) |
+| 2026-10-16 | `deepmerge-ts` 7.1.5          | Alta      | `prisma` → `@prisma/config`      | Prisma 7.10.1 (`deepmerge-ts` 8.0.2)      |
+| 2026-10-16 | `mysql2` 3.15.3 (dos avisos)  | Alta      | `prisma`                         | Prisma 7.10.1 (`mysql2` 3.24.4)           |
+
+Las correcciones de 2026-10-30 no cambian de versión mayor. Se aplicaron con
+`npm audit fix` y con la actualización de los rangos de `@nestjs/*` y
+`vitest`, sin `--force`.
 
 `npm audit` contaba cuatro vulnerabilidades altas: las dos de la tabla y las
 de `prisma` y `@prisma/config`, que solo heredaban las anteriores. Avisos:
