@@ -8,7 +8,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 - Cada Issue es pequeña y verificable. El detalle completo (alcance, tareas, Definition of Done) se redacta al abrirla en GitHub.
 - **Depende de** indica qué debe estar cerrado antes de empezar.
 - **Verificación** es la evidencia mínima para darla por cerrada.
-- La numeración empieza en 0 y coincide con la de las Issues del proyecto.
+- La numeración empieza en 0 y coincide con el «Issue #N» del título de cada Issue. El número que GitHub asigna a una Issue es otro, distinto y no relacionado.
 
 ## Resumen de fases
 
@@ -53,7 +53,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 
 - **Estado:** cerrada.
 - **Depende de:** 1, 2.
-- **Entregable:** oxlint y Prettier configurados de forma coherente en los dos workspaces; scripts raíz `lint`, `format`, `typecheck`, `test`; limpieza pendiente del scaffold de la API: decidir si se conserva `@nestjs/mau` y el script `deploy`, alinear la versión del paquete (`0.0.1`) con el resto del repositorio y revisar el resultado de `npm audit`.
+- **Entregable:** oxlint y Prettier configurados de forma coherente en los dos workspaces; scripts raíz `lint`, `format`, `typecheck`, `test`.
 - **Verificación:** los cuatro scripts se ejecutan desde la raíz y terminan sin errores.
 - **Demuestra:** calidad de código automatizada.
 
@@ -81,7 +81,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 ### 6. Configuración por variables de entorno
 
 - **Estado:** cerrada.
-- **Horas reales:** HORAS_ISSUE_6.
+- **Horas reales:** pendiente de registrar.
 - **Depende de:** 5.
 - **Entregable:** módulo de configuración con validación al arrancar; `.env.example` completo; guía de variables.
 - **Verificación:** la API se niega a arrancar con una variable obligatoria ausente y muestra un mensaje claro.
@@ -90,7 +90,7 @@ Este documento refleja el plan, no el avance real. Actualízalo al cerrar cada I
 ### 7. Registro e inicio de sesión en la API
 
 - **Estado:** cerrada.
-- **Horas reales:** HORAS_ISSUE_7.
+- **Horas reales:** pendiente de registrar.
 - **Depende de:** 6.
 - **Entregable:** `POST /auth/register` y `POST /auth/login`; hash de contraseñas; validación de entradas.
 - **Verificación:** tests de registro correcto, correo duplicado, contraseña incorrecta y entradas inválidas; la contraseña nunca aparece en respuestas ni logs.
